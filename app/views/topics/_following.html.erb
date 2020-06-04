@@ -1,0 +1,110 @@
+<% @topics.each do |topic|%>
+  <!--------------------------------------------------------->
+  <!--------------content------------------------------------------->
+  <!--------------------------------------------------------->
+<article class="media">
+  <div class="media-content">
+    <div class="content">
+      <p>
+        <p class="title is-4 m-b-0 p-t-0"><%= topic.title %>  <span class="th-300 f-15"><%=time_ago_in_words(topic.created_at)%></span></p>
+        <p class="m-t-0 p-t-0 subtitle is-6"><%= topic.user.username %></p>
+        <p class="title is-6 m-b-20 m-t-20">my experience: </p>
+        <p class="subtitle is-6"><%= topic.experience%> </p>
+        <p class="title is-6 m-b-10 m-t-20">my feelings: </p>
+        <span class="tag"><%= topic.feelings %></span>
+        <p class="title is-6 m-b-20 m-t-20">my opinions: </p>
+        <p class="subtitle is-6"><%= topic.opinions %></p>
+      </p>
+    </div>
+  </div>
+</article>
+  <!--------------------------------------------------------->
+  <!--------------agree, disagree, etc------------------------------------------->
+  <!--------------------------------------------------------->
+    <nav class="navbar">
+    <div class="navbar-start">
+        <div class="navbar-item">
+          <p class="has-text-dark">30 agree</p>
+        </div>   
+        <div class="navbar-item">
+          <p class="has-text-dark">10 disagree</p>
+        </div>   
+    </div>
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <%= link_to 'counter/defend', topic_path(topic.id), class: "has-text-black" %>
+        </div>
+<div class="dropdown is-hoverable navbar-item">
+  <div class="dropdown-trigger">
+    <button class="button is-white" aria-haspopup="true" aria-controls="dropdown-menu4">
+      <span>more ...</span>
+    </button>
+  </div>
+  <div class="dropdown-menu" id="dropdown-menu4" role="menu">
+    <div class="dropdown-content">
+      <div class="dropdown-item">
+          <a href="" class="has-text-black">raise</a>
+      </div>
+        <div class="dropdown-item">
+          <a href="" class="has-text-black">is this unproductive?</a>
+      </div>
+    </div>
+  </div>
+</div>
+    </nav>
+
+  <!--------------------------------------------------------->
+  <!--------------agree modal------------------------------------------->
+  <!--------------------------------------------------------->
+
+      <div class="modal" id="agree-with-<%= topic.id %>">
+      <div class="modal-background"></div>
+      <div class="modal-content">
+        <div class="box">
+          <a class="toggle-modal delete is-pulled-right" aria-control="agree-with-<%= topic.id %>"></a>
+          <p class="title is-5">agree</p>
+          <p class="subtitle is-6">add content to defend what you believe. this form is designed to provide the framework to produce a productive conversation for the best results in trying to be understood or heard.</p>
+          <%= form_for Reply.new do |f| %>
+          <%= f.hidden_field :status, :value => '0' %>
+          <%= f.hidden_field :topic_id, :value => topic.id %>
+        <div class="card">
+            <div class="card-content">
+            <p class="title is-6">experience (why you believe what you believe)</p>
+            <p class="subtitle is-6">this is where you talk about why you believe what you believe backed by your own physical experience. this provides background to your opinions coming up next.</p>
+            <%= f.text_area :experience, rows: "3", placeholder: "I believe this because...", class: "textarea is-light"%>
+            </div>
+        </div>
+        <br>
+          <div class="card">
+            <div class="card-content">
+            <p class="title is-6">opinions</p>
+            <p class="subtitle is-6">this is the place to list out all of your opinions on this topic and possible ways of resolution.</p>
+            <%= f.text_area :opinion, rows: "3", placeholder: "I believe this because...", class: "textarea is-light"%>
+            </div>
+        </div>
+        <br>
+          <div class="card">
+            <div class="card-content">
+            <p class="title is-6">feeling</p>
+            <p class="subtitle is-6">this is where you put your feelings towards this topic. this is so that others can connect with understand your point of view better.</p>
+            <div class="select is-light">
+            <%= f.select :feelings, (Feeling.all.map { |p| [p.name, p.id] }), class: "is-light" %>
+            </div>
+          </div>
+        </div>
+        <br>
+        <%= f.submit "submit", class: "button is-black is-pulled-right m-t-20 m-b-100" %>
+        <br><br>
+        <% end %>
+        </div>
+      </div>
+      </div>
+  <!--------------------------------------------------------->
+  <!--------------disagree modal------------------------------------------->
+  <!--------------------------------------------------------->
+
+  <!--------------------------------------------------------->
+  <!--------------unproductive modal------------------------------------------->
+  <!--------------------------------------------------------->
+    <hr>
+<% end %>

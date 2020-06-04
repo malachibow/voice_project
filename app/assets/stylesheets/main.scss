@@ -1,0 +1,18 @@
+
+
+$danger: rgb(235, 98, 82);
+$warning: rgb(255, 241, 81);
+
+$primary: #3ccb99;
+$secondary: #667DE4;
+$navigation: rgb(255, 255, 255);
+$background: rgb(244, 246, 251);
+$custom-colors: ("secondary": $secondary, 
+                "navigation": $navigation,
+                "background": $background);
+$link: $primary;
+
+@import 'bulma';
+@import '_layout';
+@import 'noty/lib/noty';
+@import 'noty/lib/themes/bootstrap-v3';

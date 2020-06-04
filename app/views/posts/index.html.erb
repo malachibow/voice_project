@@ -1,0 +1,73 @@
+<section class="section">
+<div class="container">
+<% @posts.each do |post|%>
+  <!--------------------------------------------------------->
+  <!--------------content------------------------------------------->
+  <!--------------------------------------------------------->
+<article class="media">
+  <div class="media-content">
+    <div class="content">
+      <p>
+        <p class="title is-4 m-b-0 p-t-0"><%= post.title %>  <span class="th-300 f-15"><%=time_ago_in_words(post.created_at)%></span></p>
+        <p class="m-t-0 p-t-0 subtitle is-6"><%= post.user.username %></p>
+        <p class="subtitle is-6">
+        <% if !post.reply_to.nil? %>
+            <% if post.agree? %>
+              In agreement with 
+              "<%= link_to post_path(post.reply_to), class: "has-text-dark th-500" do %>
+                <%= Post.find_by(id: post.reply_to).title %>
+              <% end %>"
+            <% else %>
+              In disagreement with 
+              "<%= link_to post_path(post.reply_to), class: "has-text-dark th-500" do %>
+                <%= Post.find_by(id: post.reply_to).title %>
+              <% end %>"
+            <% end %>
+        <% end %>
+        </p>
+        <p class="title is-6 m-b-20 m-t-20">stand: </p>
+        <p class="subtitle is-6"><%= post.stand %></p>
+        <p class="title is-6 m-b-20 m-t-20">why: </p>
+        <p class="subtitle is-6"><%= post.why%> </p>
+      </p>
+    </div>
+  </div>
+</article>
+  <!--------------------------------------------------------->
+  <!--------------agree, disagree, etc------------------------------------------->
+  <!--------------------------------------------------------->
+    <nav class="navbar">
+    <div class="navbar-start">
+        <div class="navbar-item">
+          <p class="has-text-dark"><%= Post.where(reply_to: post.id, agree: "1").count %> agree</p>
+        </div>   
+        <div class="navbar-item">
+          <p class="has-text-dark"><%= Post.where(reply_to: post.id, agree: "0").count %> disagree</p>
+        </div>   
+    </div>
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <%= link_to 'react', post_path(post.id), class: "has-text-black" %>
+        </div>
+<div class="dropdown is-hoverable navbar-item">
+  <div class="dropdown-trigger">
+    <button class="button is-white" aria-haspopup="true" aria-controls="dropdown-menu4">
+      <span>more ...</span>
+    </button>
+  </div>
+  <div class="dropdown-menu" id="dropdown-menu4" role="menu">
+    <div class="dropdown-content">
+      <div class="dropdown-item">
+          <a href="" class="has-text-black">raise</a>
+      </div>
+        <div class="dropdown-item">
+          <a href="" class="has-text-black">is this unproductive?</a>
+      </div>
+    </div>
+  </div>
+</div>
+    </nav>
+    <hr>
+<% end %>
+</div>
+</section>

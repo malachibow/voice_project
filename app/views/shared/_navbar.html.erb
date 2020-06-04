@@ -1,0 +1,26 @@
+<nav class="navbar is-spaced is-navigation">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="/">
+        <p class="th-500 f-20 has-text-dark is-family-monospace">voycer</p>
+    </a>
+
+    <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+<div id="navbarBasicExample" class="navbar-menu">
+<div class="navbar-end th-500">
+<% if user_signed_in? %>
+  <%= link_to 'new topic', new_topic_path, :class => 'navbar-item is-family-monospace' %>
+  <%= link_to 'my topics', edit_user_registration_path, :class => 'navbar-item is-family-monospace' %>
+  <%= link_to 'profile', edit_user_registration_path, :class => 'navbar-item is-family-monospace' %>
+  <%= link_to "logout", destroy_user_session_path, method: :delete, :class => 'navbar-item is-family-monospace'  %>
+<% else %>
+  <%= link_to "sign up", new_user_registration_path, :class => 'navbar-item is-family-monospace'  %>
+  <%= link_to "login", new_user_session_path, :class => 'navbar-item is-family-monospace'  %>
+<% end %>
+</div>
+</div>
+</nav>

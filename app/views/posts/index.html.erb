@@ -13,7 +13,7 @@
         <p class="subtitle is-6">
         <% if !post.reply_to.nil? %>
             <% if post.agree? %>
-              In agreement with 
+              In agreement with
               "<%= link_to post_path(post.reply_to), class: "has-text-dark th-500" do %>
                 <%= Post.find_by(id: post.reply_to).title %>
               <% end %>"
@@ -39,33 +39,18 @@
     <nav class="navbar">
     <div class="navbar-start">
         <div class="navbar-item">
-          <p class="has-text-dark"><%= Post.where(reply_to: post.id, agree: "1").count %> agree</p>
+          <p class="has-text-dark"><%= Post.where(reply_to: post.id, agree: "1", publish: "1").count %> agree</p>
         </div>   
         <div class="navbar-item">
-          <p class="has-text-dark"><%= Post.where(reply_to: post.id, agree: "0").count %> disagree</p>
+          <p class="has-text-dark"><%= Post.where(reply_to: post.id, agree: "0", publish: "1").count %> disagree</p>
         </div>   
-    </div>
-      <div class="navbar-end">
         <div class="navbar-item">
-          <%= link_to 'react', post_path(post.id), class: "has-text-black" %>
+        <div class="buttons">
+            <button class="button is-light"><i class="material-icons">bookmark_border</i></button>
+            <%= link_to 'go to post', post_path(post.id), class: "button is-light" %>
         </div>
-<div class="dropdown is-hoverable navbar-item">
-  <div class="dropdown-trigger">
-    <button class="button is-white" aria-haspopup="true" aria-controls="dropdown-menu4">
-      <span>more ...</span>
-    </button>
-  </div>
-  <div class="dropdown-menu" id="dropdown-menu4" role="menu">
-    <div class="dropdown-content">
-      <div class="dropdown-item">
-          <a href="" class="has-text-black">raise</a>
-      </div>
-        <div class="dropdown-item">
-          <a href="" class="has-text-black">is this unproductive?</a>
-      </div>
+        </div>
     </div>
-  </div>
-</div>
     </nav>
     <hr>
 <% end %>

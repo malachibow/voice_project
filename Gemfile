@@ -28,6 +28,12 @@ gem 'devise'
 #bulma
 gem "bulma-rails", "~> 0.8.0"
 
+#material icons
+gem 'material_icons'
+
+#pagination
+gem 'will_paginate'
+
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.2', require: false
 

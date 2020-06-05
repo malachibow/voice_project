@@ -10,7 +10,8 @@ Rails.application.routes.draw do
   put 'replies/agree/:id', to: 'replies#agree'
   put 'replies/disagree/:id', to: 'replies#disagree'
   resources :replies
-  
+
+  get 'my_posts', to: 'posts#my_posts', as: 'my_posts'
   resources :posts
 
   devise_for :users

@@ -10,6 +10,6 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
   private
   def set_username
-    self.username = "@#{ SecureRandom.hex(20)}"
+    self.username = "@#{ SecureRandom.hex(7)}"
   end
 end

@@ -31,7 +31,7 @@ post
       </p>
       <div class="buttons">
       <!--save-->
-        <% if Save.exists?(post_id: @post.id, user_id: current_user.id) %>
+        <% if SavedPost.exists?(post_id: @post.id, user_id: current_user.id) %>
         <%= link_to save_path(@post.id), method: :post, id: "saved" do %>
           <button class="button is-light"><i class="material-icons">bookmark</i></button>
         <% end %>

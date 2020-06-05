@@ -23,7 +23,7 @@ class PostsController < ApplicationController
 
   def saved
     #show a all saved posts
-    @saved = Save.where(user_id: current_user.id)
+    @all_saved = Post.where(id: SavedPost.select('post_id').where(user_id: current_user.id))
   end
 
   def create
@@ -90,9 +90,9 @@ class PostsController < ApplicationController
   end
 
   def save
-    save_check = Save.find_by(user_id: current_user.id, post_id: params[:id])
+    save_check = SavedPost.find_by(user_id: current_user.id, post_id: params[:id])
     if save_check.blank?
-      @save = Save.new(
+      @save = SavedPost.new(
         user_id: current_user.id,
         post_id: params[:id]
       )

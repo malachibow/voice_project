@@ -1,49 +1,51 @@
+<section class="section">
+    <div class="container">
 <p class="title f-25 th-700 m-t-20">
 saved posts
 </p>
-<% @saved.each do |save| %>
+<% @all_saved.each do |post|%>
 <article class="media has-background-light">
   <div class="media-content">
     <div class="content p-20">
       <p>
-        <p class="title is-4 m-b-0 p-t-0"><%= save.post.title %>  <span class="th-300 f-15"><%=time_ago_in_words(save.post.created_at)%></span></p>
-        <p class="m-t-0 p-t-0 subtitle is-6"><%= save.post.user.username %></p>
+        <p class="title is-4 m-b-0 p-t-0"><%= post.title %>  <span class="th-300 f-15"><%=time_ago_in_words(post.created_at)%></span></p>
+        <p class="m-t-0 p-t-0 subtitle is-6"><%= post.user.username %></p>
         <p class="subtitle is-6">
-        <% if !save.post.reply_to.nil? %>
-            <% if save.post.agree? %>
+        <% if !post.reply_to.nil? %>
+            <% if post.agree? %>
               In agreement with 
-              "<%= link_to save.post_path(save.post.reply_to), class: "has-text-dark th-500" do %>
-                <%= save.post.find_by(id: save.post.reply_to).title %>
+              "<%= link_to post_path(post.reply_to), class: "has-text-dark th-500" do %>
+                <%= Post.find_by(id: post.reply_to).title %>
               <% end %>"
             <% else %>
               In disagreement with 
-              "<%= link_to save.post_path(save.post.reply_to), class: "has-text-dark th-500" do %>
-                <%= save.post.find_by(id: save.post.reply_to).title %>
+              "<%= link_to post_path(post.reply_to), class: "has-text-dark th-500" do %>
+                <%= Post.find_by(id: post.reply_to).title %>
               <% end %>"
             <% end %>
         <% end %>
         </p>
         <p class="title is-6 m-b-20 m-t-20">stand: </p>
-        <p class="subtitle is-6"><%= save.post.stand %></p>
+        <p class="subtitle is-6"><%= post.stand %></p>
       </p>
       <div class="buttons">
       <!--save-->
-        <% if Save.exists?(save.post_id: save.post.id, user_id: current_user.id) %>
-        <%= link_to save_path(save.post.id), method: :post, id: "saved" do %>
+        <% if SavedPost.exists?(post_id: post.id, user_id: current_user.id) %>
+        <%= link_to save_path(post.id), method: :post, id: "saved" do %>
           <button class="button is-light"><i class="material-icons">bookmark</i></button>
         <% end %>
         <% else %>
-        <%= link_to save_path(save.post.id), method: :post, id: "saved" do %>
+        <%= link_to save_path(post.id), method: :post, id: "saved" do %>
             <button class="button is-light"><i class="material-icons">bookmark_border</i></button>
         <% end %>
         <% end %>
         <!--follow-->
-        <% if Follower.exists?(follower_id: current_user.id, user_id: save.post.user_id) %>
-        <%= link_to follow_path(save.post.user.id), method: :post, id: "saved" do %>
+        <% if Follower.exists?(follower_id: current_user.id, user_id: post.user_id) %>
+        <%= link_to follow_path(post.user.id), method: :post, id: "saved" do %>
           <button class="button is-light th-700">unfollow</button>
         <% end %>
         <% else %>
-        <%= link_to follow_path(save.post.user.id), method: :post, id: "saved" do %>
+        <%= link_to follow_path(post.user.id), method: :post, id: "saved" do %>
             <button class="button is-light th-700">following</button>
         <% end %>
         <% end %>
@@ -57,16 +59,16 @@ saved posts
     <nav class="navbar">
     <div class="navbar-start">
         <div class="navbar-item">
-          <p class="has-text-dark"><%= save.post.where(reply_to: save.post.id, agree: "1").count %> agree</p>
+          <p class="has-text-dark"><%= Post.where(reply_to: post.id, agree: "1").count %> agree</p>
         </div>   
         <div class="navbar-item">
-          <p class="has-text-dark"><%= save.post.where(reply_to: save.post.id, agree: "0").count %> disagree</p>
+          <p class="has-text-dark"><%= Post.where(reply_to: post.id, agree: "0").count %> disagree</p>
         </div>   
     </div>
     <div class="navbar-end">
     <div class="navbar-item">
-        <a href="" class="has-text-black">is this post unproductive?</a>
+        <a href="" class="has-text-black toggle-modal" aria-control="unproductive">is this post unproductive?</a>
     </div>
     </div>
     </nav>
-<% end %>
+    <% end %>

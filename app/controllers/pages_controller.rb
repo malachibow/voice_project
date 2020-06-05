@@ -1,7 +1,7 @@
 class PagesController < ApplicationController
   def home
     if user_signed_in?
-      redirect_to posts_path
+      redirect_to posts_path(filter: "discover")
     end
   end
 end

@@ -12,7 +12,12 @@ Rails.application.routes.draw do
   resources :replies
 
   get 'my_posts', to: 'posts#my_posts', as: 'my_posts'
+  get 'saved', to: 'posts#saved', as: 'saved'
+  post 'save/:id', to: 'posts#save', as: 'save'
+  post 'follow/:id', to: 'posts#follow', as: 'follow'
   resources :posts
+ 
+  resources :saves
 
   devise_for :users
 

@@ -1,13 +1,18 @@
+
+<div class="tabs">
+  <ul>
+    <li class="<%if params[:filter] == "following"%>th-700<%end%>"><%= link_to 'following', posts_path(filter: "following") %></li>
+    <li class="<%if params[:filter] == "discover"%>th-700<%end%>"><%= link_to 'discover', posts_path(filter: "discover") %></li>
+  </ul>
+</div>
+
+
 <section class="section">
-<div class="container">
+<div class="containe">
 <% @posts.each do |post|%>
   <!--------------------------------------------------------->
   <!--------------content------------------------------------------->
   <!--------------------------------------------------------->
-<article class="media">
-  <div class="media-content">
-    <div class="content">
-      <p>
         <p class="title is-4 m-b-0 p-t-0"><%= post.title %>  <span class="th-300 f-15"><%=time_ago_in_words(post.created_at)%></span></p>
         <p class="m-t-0 p-t-0 subtitle is-6"><%= post.user.username %></p>
         <p class="subtitle is-6">
@@ -27,12 +32,6 @@
         </p>
         <p class="title is-6 m-b-20 m-t-20">stand: </p>
         <p class="subtitle is-6"><%= post.stand %></p>
-        <p class="title is-6 m-b-20 m-t-20">why: </p>
-        <p class="subtitle is-6"><%= post.why%> </p>
-      </p>
-    </div>
-  </div>
-</article>
   <!--------------------------------------------------------->
   <!--------------agree, disagree, etc------------------------------------------->
   <!--------------------------------------------------------->
@@ -46,7 +45,6 @@
         </div>   
         <div class="navbar-item">
         <div class="buttons">
-            <button class="button is-light"><i class="material-icons">bookmark_border</i></button>
             <%= link_to 'go to post', post_path(post.id), class: "button is-light" %>
         </div>
         </div>
@@ -54,5 +52,16 @@
     </nav>
     <hr>
 <% end %>
+<%if !params.has_key?(:filter) || params[:filter] == "following"%>
+<span class="th-700"><%== pagy_nav(@pagy) %></span>
+<% end %>
 </div>
 </section>
+
+<%if params[:filter] == "discover"%>
+<nav class="navbar is-fixed-bottom">
+<%= link_to posts_path(filter: "discover"), class: "button is-black changepost", :method => :get do %>
+    <i class="material-icons f-40">clear</i>
+<% end %>
+</nav>
+<% end %>

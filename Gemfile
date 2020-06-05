@@ -33,6 +33,7 @@ gem 'material_icons'
 
 #pagination
 gem 'will_paginate'
+gem 'pagy', '~> 3.5'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.2', require: false

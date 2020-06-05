@@ -2,13 +2,28 @@ class PostsController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    #what is the definition of trending
-    #show a list of topics with 3/4's of the posts trending and 1/4th not trending (pagnate)
-    @posts = Post.where(publish: "1")
+    ##setting cache settings
+    response.headers["Cache-Control"] = "no-cache, no-store, max-age=0, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "Fri, 01 Jan 1990 00:00:00 GMT"
+    ##
+    if params[:filter] == "discover"
+      #following
+      @posts = Post.original.published.random
+    else
+      #what is the definition of trending
+      #show a list of topics with 2/3's of the posts trending and 1/3rd not trending (pagnate)
+      @pagy, @posts = pagy(Post.published, items: 10)
+    end
   end
 
   def new
     #show a form to create a new post
+  end
+
+  def saved
+    #show a all saved posts
+    @saved = Save.where(user_id: current_user.id)
   end
 
   def create
@@ -23,7 +38,8 @@ class PostsController < ApplicationController
           stand: post_params[:stand],
           why: post_params[:why],
           user_id: current_user.id,
-          publish: post_params[:publish]
+          publish: post_params[:publish],
+          original: true
         )
         if @post.save
           if @post.publish?
@@ -49,7 +65,8 @@ class PostsController < ApplicationController
           stand: post_params[:stand],
           why: post_params[:why],
           user_id: current_user.id,
-          publish: post_params[:publish]
+          publish: post_params[:publish],
+          original: false
         )
         if @post.save
           if @post.publish?
@@ -69,8 +86,26 @@ class PostsController < ApplicationController
 
   def update
     #allow the user to change his stand on his post (agree or disagree)
+    #allow the user the edit unpublished posts
   end
 
+  def save
+    save_check = Save.find_by(user_id: current_user.id, post_id: params[:id])
+    if save_check.blank?
+      @save = Save.new(
+        user_id: current_user.id,
+        post_id: params[:id]
+      )
+      if @save.save
+        redirect_to request.referrer, notice: "saved"
+      else
+        redirect_to request.referrer, notice: "something went wrong. try again."
+      end 
+    else
+      save_check.destroy
+      redirect_to request.referrer, notice: "unsaved"
+    end
+  end
 
   def show
     #show the post
@@ -81,12 +116,34 @@ class PostsController < ApplicationController
   end
 
   def my_posts
-    #show the posts
-    @my_posts = Post.where(user_id: current_user.id, publish: "1", reply_to: nil)
     #show the replying posts
-    @reply_posts= Post.where(user_id: current_user.id, publish: "1", reply_to: nil)
-    #show the reactions to the post
-    @drafts = Post.where(user_id: current_user.id, publish: "0")
+    if params[:page] == "my_reactions"
+    @posts= Post.where(user_id: current_user.id, publish: "1").where.not(reply_to: nil)
+    elsif params[:page] == "drafts"
+    #show the drafts
+    @posts = Post.where(user_id: current_user.id, publish: "0")
+    else 
+    #show the posts
+    @posts = Post.where(user_id: current_user.id, publish: "1", reply_to: nil)
+    end
+  end
+
+  def follow 
+    fol = Follower.find_by(follower_id: current_user.id, user_id: params[:id])
+    if fol.blank?
+      @follower = Follower.new(
+        user_id: params[:id],
+        follower_id: current_user.id
+      )
+      if @follower.save
+        redirect_to request.referrer, notice: "you are now following this voice."
+      else
+        redirect_to request.referrer, alert: "something went wrong. please try again."
+      end
+    else
+      fol.destroy
+      redirect_to request.referrer, notice: "you unfollowed this voice."
+    end
   end
 
   private

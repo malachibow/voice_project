@@ -1,19 +1,7 @@
-<div class="tabs">
-  <ul>
-    <li class="<%if params[:page] == "my_posts"%>th-700<%end%>"><%= link_to 'my posts', my_posts_path(page: "my_posts") %></li>
-    <li class="<%if params[:page] == "my_reactions"%>th-700<%end%>"><%= link_to 'my reactions', my_posts_path(page: "my_reactions") %></li>
-    <li class="<%if params[:page] == "drafts"%>th-700<%end%>"><%= link_to 'drafts', my_posts_path(page: "drafts") %></li>
-  </ul>
-</div>
-
-<section class="section">
-    <div class="container">
-<% @posts.each do |post|%>
 <article class="media">
   <div class="media-content">
     <div class="content p-20">
       <p>
-        <%if params[:page] == "drafts"%> <i class="material-icons has-text-black is-pulled-right">edit</i> <%end%>
         <p class="title is-4 m-b-0 p-t-0"><%= post.title %>  <span class="th-300 f-15"><%=time_ago_in_words(post.created_at)%></span></p>
         <p class="m-t-0 p-t-0 subtitle is-6"><%= post.user.username %></p>
         <p class="subtitle is-6">
@@ -55,6 +43,3 @@
 
     </nav>
     <hr>
-<% end %>
-    </div>
-</section>

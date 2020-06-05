@@ -29,6 +29,28 @@ post
         <p class="title is-6 m-b-20 m-t-20">why: </p>
         <p class="subtitle is-6"><%= @post.why%> </p>
       </p>
+      <div class="buttons">
+      <!--save-->
+        <% if Save.exists?(post_id: @post.id, user_id: current_user.id) %>
+        <%= link_to save_path(@post.id), method: :post, id: "saved" do %>
+          <button class="button is-light"><i class="material-icons">bookmark</i></button>
+        <% end %>
+        <% else %>
+        <%= link_to save_path(@post.id), method: :post, id: "saved" do %>
+            <button class="button is-light"><i class="material-icons">bookmark_border</i></button>
+        <% end %>
+        <% end %>
+        <!--follow-->
+        <% if Follower.exists?(follower_id: current_user.id, user_id: @post.user_id) %>
+        <%= link_to follow_path(@post.user.id), method: :post, id: "saved" do %>
+          <button class="button is-light th-700">unfollow</button>
+        <% end %>
+        <% else %>
+        <%= link_to follow_path(@post.user.id), method: :post, id: "saved" do %>
+            <button class="button is-light th-700">following</button>
+        <% end %>
+        <% end %>
+        </div>
     </div>
   </div>
 </article>
@@ -43,9 +65,6 @@ post
         <div class="navbar-item">
           <p class="has-text-dark"><%= Post.where(reply_to: @post.id, agree: "0").count %> disagree</p>
         </div>   
-        <div class="navbar-item">
-          <a class="button is-light toggle-modal" aria-control="react">new reaction</a>
-        </div>
     </div>
     <div class="navbar-end">
     <div class="navbar-item">
@@ -68,7 +87,7 @@ post
         <li>the user is wasting your time and no longer trying to bring value to the conversation.</li>
         <li>the argument contains close-off statements in attempt to "shut you down" or "win the argument". example: "because that's the way of god" or "its this way because bla-bla told me so" or "I believe this becuase i've always believed this". </li>
         </ol>
-        * If 2 or more people submit this form for this user, the user will be banned from posting for 3 days. The goal of voycer is to answer the question: "what is in peoples heads around me and why do they believe what they believe?". <br><br>
+        * The goal of voycer is to answer the question: "what is in peoples heads around me and why do they believe what they believe?". <br><br>
         When submitting this form, we want you to think about the following: "do I not like what this person has said because it challenges my beliefs and is hard to explain why they are wrong?" <br>
         <strong>If this is your reason, we encourage you to continue the dialog and further try to investigate what is in this persons head. Otherwise submit the form below.</strong>
         <label for="" class="label">reasoning</label>
@@ -103,7 +122,7 @@ post
             <p class="subtitle is-6">leave unchecked if you do not agree.</p>
             <label class="checkbox">
                 <%= f.check_box :agree %>
-                yes
+                i agree
             </label>
             </div>
         </div>
@@ -111,8 +130,9 @@ post
         <div class="card">
             <div class="card-content">
             <p class="title is-6">headline</p>
-            <p class="subtitle is-6">this is the header for this topic is 10 words or less.</p>
-            <%= f.text_area :title, rows: "3", placeholder: "I believe this because...", :required => true, class: "textarea is-light" %>
+            <p class="subtitle is-6">this is the header for this topic is 30 words or less.</p>
+            <%= f.text_area :title, id: "title", rows: "3", placeholder: "I believe this because...", :required => true, class: "textarea is-light", :value => "Re: #{@post.title}" %>
+            <div id="remainingChars">Max limit is 30 words.</div>
             </div>
         </div>
         <br>
@@ -120,16 +140,9 @@ post
             <div class="card-content">
             <p class="title is-6">stand</p>
             <p class="subtitle is-6">this is the place to list out all of your opinions on this topic and possible ways of resolution.</p>
-            <%= f.text_area :stand, rows: "3", placeholder: "I believe this because...", :required => true, class: "textarea is-light"%>
-            </div>
-        </div>
-        <br>
-        <div class="card">
-            <div class="card-content">
-            <p class="title is-6">experience (why you believe what you believe)</p>
-            <p class="subtitle is-6">this is where you talk about why you believe what you believe backed by your own physical experience. try to be as specific as possible.</p>
-            <%= f.text_area :why, rows: "3", placeholder: "I believe this because...", :required => true, class: "textarea is-light"%>
-            </div>
+            <%= f.text_area :stand, id: "content", rows: "3", placeholder: "I believe this because...", :required => true, class: "textarea is-light"%>
+           <div id="remainingCharsContent">Max limit is 300 words.</div>
+           </div>
         </div>
         <br>
         <div class="card">
@@ -155,36 +168,35 @@ post
 <!-------------------------------------------------------------------------------------------------------------->
 <!-----------reactions--------------------------------------------------------------------------------------------------->
 <!-------------------------------------------------------------------------------------------------------------->
+<a class="button is-black toggle-modal is-pulled-right th-500" aria-control="react"> <i class="material-icons">add</i> new reaction</a>
 <p class="title f-25 th-700 m-t-20 m-b-0">
 reactions
 </p>
 
-<% @reactions.each do |reaction| %>
+<% @reactions.each do |post| %>
 <article class="media">
   <div class="media-content">
     <div class="content p-20">
       <p>
-        <p class="title is-4 m-b-0 p-t-0"><%= reaction.title %>  <span class="th-300 f-15"><%=time_ago_in_words(@post.created_at)%></span></p>
-        <p class="m-t-0 p-t-0 subtitle is-6"><%= reaction.user.username %></p>
+        <p class="title is-4 m-b-0 p-t-0"><%= post.title %>  <span class="th-300 f-15"><%=time_ago_in_words(@post.created_at)%></span></p>
+        <p class="m-t-0 p-t-0 subtitle is-6"><%= post.user.username %></p>
         <p class="subtitle is-6">
-        <% if !reaction.reply_to.nil? %>
-            <% if reaction.agree? %>
+        <% if !post.reply_to.nil? %>
+            <% if post.agree? %>
               In agreement with 
-              "<%= link_to post_path(reaction.reply_to), class: "has-text-dark th-500" do %>
-                <%= Post.find_by(id: reaction.reply_to).title %>
+              "<%= link_to post_path(post.reply_to), class: "has-text-dark th-500" do %>
+                <%= Post.find_by(id: post.reply_to).title %>
               <% end %>"
             <% else %>
               In disagreement with 
-              "<%= link_to post_path(reaction.reply_to), class: "has-text-dark th-500" do %>
-                <%= Post.find_by(id: reaction.reply_to).title %>
+              "<%= link_to post_path(post.reply_to), class: "has-text-dark th-500" do %>
+                <%= Post.find_by(id: post.reply_to).title %>
               <% end %>"
             <% end %>
         <% end %>
         </p>
         <p class="title is-6 m-b-20 m-t-20">stand: </p>
-        <p class="subtitle is-6"><%= reaction.stand %></p>
-        <p class="title is-6 m-b-20 m-t-20">why: </p>
-        <p class="subtitle is-6"><%= reaction.why%> </p>
+        <p class="subtitle is-6"><%= post.stand %></p>
       </p>
     </div>
   </div>
@@ -195,13 +207,13 @@ reactions
     <nav class="navbar">
     <div class="navbar-start">
         <div class="navbar-item">
-          <p class="has-text-dark"><%= Post.where(reply_to: reaction.id, agree: "1").count %> agree</p>
+          <p class="has-text-dark"><%= Post.where(reply_to: post.id, agree: "1").count %> agree</p>
         </div>   
         <div class="navbar-item">
-          <p class="has-text-dark"><%= Post.where(reply_to: reaction.id, agree: "0").count %> disagree</p>
+          <p class="has-text-dark"><%= Post.where(reply_to: post.id, agree: "0").count %> disagree</p>
         </div>   
         <div class="navbar-item">
-            <%= link_to 'go to post', post_path(reaction.id), class:"button is-light" %>
+            <%= link_to 'go to post', post_path(post.id), class:"button is-light" %>
         </div>
     </div>
 

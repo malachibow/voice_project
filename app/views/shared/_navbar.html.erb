@@ -1,7 +1,7 @@
 <nav class="navbar is-spaced is-navigation">
   <div class="navbar-brand">
     <a class="navbar-item" href="/">
-        <p class="f-20 has-text-dark th-700">voycer.</p>
+        <p class="f-20 has-text-dark th-700"> hearing thread.</p>
     </a>
 
     <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
@@ -14,7 +14,7 @@
 <div class="navbar-end th-500">
 <% if user_signed_in? %>
   <%= link_to 'new topic', new_post_path, :class => 'navbar-item' %>
-  <%= link_to 'saved', new_post_path, :class => 'navbar-item' %>
+  <%= link_to 'saved', saved_path, :class => 'navbar-item' %>
   <%= link_to 'my posts/drafts', my_posts_path, :class => 'navbar-item' %>
   <%= link_to 'profile', edit_user_registration_path, :class => 'navbar-item' %>
   <%= link_to "logout", destroy_user_session_path, method: :delete, :class => 'navbar-item'  %>

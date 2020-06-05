@@ -13,7 +13,8 @@ class PostsController < ApplicationController
     else
       #what is the definition of trending
       #show a list of topics with 2/3's of the posts trending and 1/3rd not trending (pagnate)
-      @pagy, @posts = pagy(Post.published, items: 10)
+      following_posts = Post.published.where(user_id: Follower.select("user_id").where(follower_id: current_user.id))
+      @pagy, @posts = pagy(following_posts, items: 10)
     end
   end
 

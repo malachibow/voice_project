@@ -20,7 +20,7 @@
     disagrees
   </div>
   <div class="column">
-    <p class="title th-700 f-25">-</p>
+    <p class="title th-700 f-25"><%= Follower.where(user_id: current_user.id).count %></p>
     followers
   </div>
   </div>

@@ -1,5 +1,19 @@
 <section class="section">
     <div class="container">
+
+<!--------yarn------------------------------------------------------->
+<% @loop_post = @post %>
+<%= link_to @post.id, post_path(@post.id), class: "has-text-dark" %>&nbsp; /
+<% while !@loop_post.original?  %>
+  <% @loop_post = Post.find_by(id: @loop_post.reply_to) %>
+  <% if @loop_post.original? %>
+    &nbsp;<%= link_to "skien", post_path(@loop_post.id), class: "has-text-grey-light" %>&nbsp;
+  <% else %>
+     &nbsp;<%= link_to @loop_post.id, post_path(@loop_post.id), class: "has-text-grey-light" %>&nbsp;/
+  <% end %>
+<% end %>
+<!--------yarn------------------------------------------------------->
+
 <p class="title f-25 th-700 m-t-20">
 post
 </p>
@@ -26,8 +40,6 @@ post
         </p>
         <p class="title is-6 m-b-20 m-t-20">stand: </p>
         <p class="subtitle is-6"><%= @post.stand %></p>
-        <p class="title is-6 m-b-20 m-t-20">why: </p>
-        <p class="subtitle is-6"><%= @post.why%> </p>
       </p>
       <div class="buttons">
       <!--save-->
@@ -47,7 +59,7 @@ post
         <% end %>
         <% else %>
         <%= link_to follow_path(@post.user.id), method: :post, id: "saved" do %>
-            <button class="button is-light th-700">following</button>
+            <button class="button is-light th-700">follow</button>
         <% end %>
         <% end %>
         </div>
@@ -68,7 +80,7 @@ post
     </div>
     <div class="navbar-end">
     <div class="navbar-item">
-        <a href="" class="has-text-black toggle-modal" aria-control="unproductive">is this post unproductive?</a>
+        <a href="" class="has-text-black toggle-modal" aria-control="unproductive">unproductive?</a>
     </div>
     </div>
     </nav>
@@ -83,7 +95,7 @@ post
         <h1 class="title is-5 th-700">is this post unproductive?</h1>
         <h3 class="subtitle is-6">an unproductive post is one in which no valuble information is brought to the table. This could come in 3 forms:</h3>
         <ol class="m-40">
-        <li>the post is agressive and demanding. example: "people that believe this are going to hell"</li>
+        <li>the post is agressively rude and pointed toward one person rather than the issue. example: "You are a bla-bla"</li>
         <li>the user is wasting your time and no longer trying to bring value to the conversation.</li>
         <li>the argument contains close-off statements in attempt to "shut you down" or "win the argument". example: "because that's the way of god" or "its this way because bla-bla told me so" or "I believe this becuase i've always believed this". </li>
         </ol>
@@ -93,9 +105,9 @@ post
         <label for="" class="label">reasoning</label>
         <div class="select is-light">
         <select name="" id="">
-        <option value="">the post is agressive and demanding</option>
-        <option value="">the user is wasting your time and no longer trying to bring value to the conversation</option>
-        <option value="">the argument contains close-off statements in attempt to "shut you down" or "win the argument"</option>
+        <option value="">1. the post is agressively rude and pointed toward one person rather than the issue</option>
+        <option value="">2. the user is wasting your time and no longer trying to bring value to the conversation</option>
+        <option value="">3. the argument contains close-off statements in attempt to "shut you down" or "win the argument"</option>
         </select>
         </div>
         <br><br>
@@ -140,7 +152,7 @@ post
             <div class="card-content">
             <p class="title is-6">stand</p>
             <p class="subtitle is-6">this is the place to list out all of your opinions on this topic and possible ways of resolution.</p>
-            <%= f.text_area :stand, id: "content", rows: "3", placeholder: "I believe this because...", :required => true, class: "textarea is-light"%>
+            <%= f.text_area :stand, id: "content", rows: "3", placeholder: "I believe this because...", class: "textarea is-light"%>
            <div id="remainingCharsContent">Max limit is 300 words.</div>
            </div>
         </div>

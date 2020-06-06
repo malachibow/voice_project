@@ -1,10 +1,7 @@
 <section class="section">
     <div class="container">
-<p class="title f-25 th-700 m-t-20">
-saved posts
-</p>
 <% @all_saved.each do |post|%>
-<article class="media has-background-light">
+<article class="media ">
   <div class="media-content">
     <div class="content p-20">
       <p>
@@ -39,6 +36,7 @@ saved posts
             <button class="button is-light"><i class="material-icons">bookmark_border</i></button>
         <% end %>
         <% end %>
+        &nbsp;
         <!--follow-->
         <% if Follower.exists?(follower_id: current_user.id, user_id: post.user_id) %>
         <%= link_to follow_path(post.user.id), method: :post, id: "saved" do %>
@@ -64,6 +62,9 @@ saved posts
         <div class="navbar-item">
           <p class="has-text-dark"><%= Post.where(reply_to: post.id, agree: "0").count %> disagree</p>
         </div>   
+        <div class="navbar-item">
+            <%= link_to 'go to post', post_path(post.id), class: "button is-light" %>
+        </div>
     </div>
     <div class="navbar-end">
     <div class="navbar-item">

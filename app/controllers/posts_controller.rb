@@ -7,14 +7,17 @@ class PostsController < ApplicationController
     response.headers["Pragma"] = "no-cache"
     response.headers["Expires"] = "Fri, 01 Jan 1990 00:00:00 GMT"
     ##
-    if params[:filter] == "discover"
+    if params[:filter] == "following"
       #following
-      @posts = Post.original.published.random
+      following_posts = Post.published.where(user_id: Follower.select("user_id").where(follower_id: current_user.id))
+      @pagy, @posts = pagy(following_posts, items: 10)
+    elsif params[:filter] == "replies"
+      replies_to_my_posts = Post.where(reply_to: Post.select("id").where(user_id: current_user.id))
+      @pagy, @posts = pagy(replies_to_my_posts, items: 10)
     else
       #what is the definition of trending
       #show a list of topics with 2/3's of the posts trending and 1/3rd not trending (pagnate)
-      following_posts = Post.published.where(user_id: Follower.select("user_id").where(follower_id: current_user.id))
-      @pagy, @posts = pagy(following_posts, items: 10)
+      @posts = Post.original.published.random
     end
   end
 
@@ -119,13 +122,13 @@ class PostsController < ApplicationController
   def my_posts
     #show the replying posts
     if params[:page] == "my_reactions"
-    @posts= Post.where(user_id: current_user.id, publish: "1").where.not(reply_to: nil)
+    @posts= Post.where(user_id: current_user.id, publish: true).where(original: false)
     elsif params[:page] == "drafts"
     #show the drafts
-    @posts = Post.where(user_id: current_user.id, publish: "0")
+    @posts = Post.where(user_id: current_user.id, publish: nil)
     else 
     #show the posts
-    @posts = Post.where(user_id: current_user.id, publish: "1", reply_to: nil)
+    @posts = Post.where(user_id: current_user.id, publish: true, reply_to: nil)
     end
   end
 

@@ -2,7 +2,8 @@
 <div class="tabs">
   <ul>
     <li class="<%if params[:filter] == "following"%>th-700<%end%>"><%= link_to 'following', posts_path(filter: "following") %></li>
-    <li class="<%if params[:filter] == "discover"%>th-700<%end%>"><%= link_to 'discover', posts_path(filter: "discover") %></li>
+    <li class="<%if params[:filter] == "discover" || !params.has_key?(:filter)%>th-700<%end%>"><%= link_to 'discover', posts_path(filter: "discover") %></li>
+    <li class="<%if params[:filter] == "replies" %>th-700<%end%>"><%= link_to 'replies', posts_path(filter: "replies") %></li>
   </ul>
 </div>
 
@@ -52,9 +53,15 @@
     </nav>
     <hr>
 <% end %>
-<%if !params.has_key?(:filter) || params[:filter] == "following"%>
-<span class="th-700"><%== pagy_nav(@pagy) %></span>
+<% if @posts.blank? %>
+  There are no posts to show.
+<% else %>
+  <%if params[:filter] == "following" || params[:filter] == "replies" %>
+  <span class="th-700"><%== pagy_nav(@pagy) %></span>
+  <% end %>
 <% end %>
+
+
 </div>
 </section>
 

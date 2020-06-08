@@ -153,13 +153,15 @@
         <div class="navbar-item">
           <p class="has-text-dark"><%= Post.where(reply_to: post.id, agree: "1").count %> agree | <%= Post.where(reply_to: post.id, agree: "0").count %> disagree</p>
         </div>    
-        <div class="navbar-item">
+    </div>
+    <div class="navbar-end">
+          <div class="navbar-item">
             <%= link_to 'see thread', post_path(post.id), class:"has-text-dark" %>
         </div>
     </div>
-    <% end %>
 
     </nav>
+    <% end %>
     <hr>
 <% end %>
     </div>

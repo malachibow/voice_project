@@ -1,45 +1,51 @@
-<article class="media">
-  <div class="media-content">
-    <div class="content p-20">
-      <p>
+
+  <!--------------------------------------------------------->
+  <!--------------content------------------------------------------->
+  <!--------------------------------------------------------->
+      <%if post.original? %>
         <p class="title is-4 m-b-0 p-t-0"><%= post.title %>  <span class="th-300 f-15"><%=time_ago_in_words(post.created_at)%></span></p>
         <p class="m-t-0 p-t-0 subtitle is-6"><%= post.user.username %></p>
+    <% else %>
         <p class="subtitle is-6">
-        <% if !post.reply_to.nil? %>
+            <% @reply_to_post = Post.find_by(id: post.reply_to)%>
             <% if post.agree? %>
-              In agreement with 
-              "<%= link_to post_path(post.reply_to), class: "has-text-dark th-500" do %>
-                <%= Post.find_by(id: post.reply_to).title %>
+              <span class="title th-700 is-6">In agreement with: </span> <br><br>
+              "<%= link_to post_path(post.reply_to), class: "has-text-dark" do %>
+                <span class="subtitle th-600 is-7"><%= @reply_to_post.title %> </span><br>
+                <span class="subtitle th-400 is-7"><%= @reply_to_post.stand %> </span>
               <% end %>"
             <% else %>
-              In disagreement with 
-              "<%= link_to post_path(post.reply_to), class: "has-text-dark th-500" do %>
-                <%= Post.find_by(id: post.reply_to).title %>
+              <span class="subtitle th-700 is-6">In disagreement with: </span><br><br>
+              "<%= link_to post_path(post.reply_to), class: "has-text-dark" do %>
+                <span class="subtitle th-600 is-7"><%= @reply_to_post.title %> </span><br>
+                <span class="subtitle th-400 is-7"><%= @reply_to_post.stand %> </span>
               <% end %>"
             <% end %>
-        <% end %>
+            <span class="th-300 f-15">...<%=time_ago_in_words(post.created_at)%> ago</span>
         </p>
-        <p class="title is-6 m-b-20 m-t-20">stand: </p>
-        <p class="subtitle is-6"><%= post.stand %></p>
-      </p>
-    </div>
-  </div>
-</article>
+    <% end %>
+    <% if !post.stand.blank? %>
+        <p class="subtitle is-6 m-b-30"><%= post.stand %></p>
+    <% end %>
   <!--------------------------------------------------------->
   <!--------------agree, disagree, etc------------------------------------------->
   <!--------------------------------------------------------->
     <nav class="navbar">
     <div class="navbar-start">
         <div class="navbar-item">
-          <p class="has-text-dark"><%= Post.where(reply_to: post.id, agree: "1").count %> agree</p>
+          <p class="has-text-dark"><%= Post.where(reply_to: post.id, agree: "1", publish: "1").count %> agree</p>
         </div>   
         <div class="navbar-item">
-          <p class="has-text-dark"><%= Post.where(reply_to: post.id, agree: "0").count %> disagree</p>
+          <p class="has-text-dark"><%= Post.where(reply_to: post.id, agree: "0", publish: "1").count %> disagree</p>
         </div>   
         <div class="navbar-item">
-            <%= link_to 'go to post', post_path(post.id), class:"button is-light" %>
+            <%= link_to 'go to post', post_path(post.id) %>
+        </div>
+        <div class="navbar-item">
+            <%= link_to 'mark as unproductive', post_path(post.id) %>
         </div>
     </div>
-
     </nav>
     <hr>
+
+

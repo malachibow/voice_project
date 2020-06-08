@@ -3,7 +3,6 @@ class Post < ApplicationRecord
   has_many :saved_posts
   has_and_belongs_to_many :followers
 
-  validates :title, presence: { message: "Must enter a header." }
 
   scope :published, -> {
           where("publish = ?", true)

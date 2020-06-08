@@ -1,9 +1,16 @@
+
+
+
 <section class="section">
     <div class="container">
 
 <!--------yarn------------------------------------------------------->
 <% @loop_post = @post %>
-<%= link_to @post.id, post_path(@post.id), class: "has-text-dark" %>&nbsp; /
+  <% if @loop_post.original? %>
+    &nbsp;<%= link_to "skien", post_path(@post.id), class: "has-text-grey-light" %>&nbsp;
+  <% else %>
+     &nbsp;<%= link_to @post.id, post_path(@post.id), class: "has-text-dark" %>&nbsp; /
+  <% end %>
 <% while !@loop_post.original?  %>
   <% @loop_post = Post.find_by(id: @loop_post.reply_to) %>
   <% if @loop_post.original? %>
@@ -20,27 +27,36 @@ post
 <article class="media has-background-light">
   <div class="media-content">
     <div class="content p-20">
-      <p>
-        <p class="title is-4 m-b-0 p-t-0"><%= @post.title %>  <span class="th-300 f-15"><%=time_ago_in_words(@post.created_at)%></span></p>
+    <%if @post.original? %>
+        <p class="th-700 f-20 m-b-0 p-t-0"><%= @post.title %> <span class="th-300 f-15"><%=time_ago_in_words(@post.created_at)%></span></p>
+        <p class="m-t-0 p-t-0 subtitle is-6"><%= @post.user.username %></p>
+    <% else %>
+<p class="th-700 f-20 m-b-0 p-t-0">reply <span class="th-300 f-15"><%=time_ago_in_words(@post.created_at)%></span></p>
         <p class="m-t-0 p-t-0 subtitle is-6"><%= @post.user.username %></p>
         <p class="subtitle is-6">
-        <% if !@post.reply_to.nil? %>
+            <% @reply_to_post = Post.find_by(id: @post.reply_to)%>
             <% if @post.agree? %>
               In agreement with 
-              "<%= link_to post_path(@post.reply_to), class: "has-text-dark th-500" do %>
-                <%= Post.find_by(id: @post.reply_to).title %>
+              "<%= link_to post_path(@reply_to_post.id), class: "has-text-dark" do %>
+                <span class="subtitle th-500 is-6">
+                <%= @reply_to_post.title %>...
+                <%= @reply_to_post.stand %> 
+                </span>
               <% end %>"
             <% else %>
               In disagreement with 
-              "<%= link_to post_path(@post.reply_to), class: "has-text-dark th-500" do %>
-                <%= Post.find_by(id: @post.reply_to).title %>
+              "<%= link_to post_path(@reply_to_post.id), class: "has-text-dark" do %>
+                <span class="subtitle th-500 is-6">
+                <%= @reply_to_post.title %>...
+                <%= @reply_to_post.stand %> 
+                </span>
               <% end %>"
             <% end %>
-        <% end %>
-        </p>
-        <p class="title is-6 m-b-20 m-t-20">stand: </p>
-        <p class="subtitle is-6"><%= @post.stand %></p>
-      </p>
+          </p>
+    <% end %>
+    <% if !@post.stand.blank? %>
+      <p class="subtitle is-6 m-b-20"> <span class="title th-700 is-6">stand: </span> <br> <%= @post.stand %></p>
+    <% end %>
       <div class="buttons">
       <!--save-->
         <% if SavedPost.exists?(post_id: @post.id, user_id: current_user.id) %>
@@ -72,10 +88,7 @@ post
     <nav class="navbar">
     <div class="navbar-start">
         <div class="navbar-item">
-          <p class="has-text-dark"><%= Post.where(reply_to: @post.id, agree: "1").count %> agree</p>
-        </div>   
-        <div class="navbar-item">
-          <p class="has-text-dark"><%= Post.where(reply_to: @post.id, agree: "0").count %> disagree</p>
+          <p class="has-text-dark"><%= Post.where(reply_to: @post.id, agree: "1").count %> agree | <%= Post.where(reply_to: @post.id, agree: "0").count %> disagree</p>
         </div>   
     </div>
     <div class="navbar-end">
@@ -141,17 +154,8 @@ post
         <br>
         <div class="card">
             <div class="card-content">
-            <p class="title is-6">headline</p>
-            <p class="subtitle is-6">this is the header for this topic is 30 words or less.</p>
-            <%= f.text_area :title, id: "title", rows: "3", placeholder: "I believe this because...", :required => true, class: "textarea is-light", :value => "Re: #{@post.title}" %>
-            <div id="remainingChars">Max limit is 30 words.</div>
-            </div>
-        </div>
-        <br>
-        <div class="card">
-            <div class="card-content">
             <p class="title is-6">stand</p>
-            <p class="subtitle is-6">this is the place to list out all of your opinions on this topic and possible ways of resolution.</p>
+            <p class="subtitle is-6">this is the place to list out all of your opinions on this issue and possible ways of resolution.</p>
             <%= f.text_area :stand, id: "content", rows: "3", placeholder: "I believe this because...", class: "textarea is-light"%>
            <div id="remainingCharsContent">Max limit is 300 words.</div>
            </div>
@@ -180,36 +184,49 @@ post
 <!-------------------------------------------------------------------------------------------------------------->
 <!-----------reactions--------------------------------------------------------------------------------------------------->
 <!-------------------------------------------------------------------------------------------------------------->
-<a class="button is-black toggle-modal is-pulled-right th-500" aria-control="react"> <i class="material-icons">add</i> new reaction</a>
-<p class="title f-25 th-700 m-t-20 m-b-0">
-reactions
-</p>
+<nav class="navbar has-shadow">
+<div class="navbar-brand">
+<div class="title f-25 th-700 m-t-20 m-b-0 navbar-item">
+threads
+</div>
+</div>
+</nav>
+
 
 <% @reactions.each do |post| %>
 <article class="media">
   <div class="media-content">
     <div class="content p-20">
-      <p>
-        <p class="title is-4 m-b-0 p-t-0"><%= post.title %>  <span class="th-300 f-15"><%=time_ago_in_words(@post.created_at)%></span></p>
+    <%if post.original? %>
+        <p class="th-700 f-20 m-b-0 p-t-0"><%= post.title %> <span class="th-300 f-15"><%=time_ago_in_words(post.created_at)%></span></p>
+        <p class="m-t-0 p-t-0 subtitle is-6"><%= post.user.username %></p>
+    <% else %>
+<p class="th-700 f-20 m-b-0 p-t-0">reply <span class="th-300 f-15"><%=time_ago_in_words(post.created_at)%></span></p>
         <p class="m-t-0 p-t-0 subtitle is-6"><%= post.user.username %></p>
         <p class="subtitle is-6">
-        <% if !post.reply_to.nil? %>
+            <% @reply_to_post = Post.find_by(id: post.reply_to)%>
             <% if post.agree? %>
               In agreement with 
-              "<%= link_to post_path(post.reply_to), class: "has-text-dark th-500" do %>
-                <%= Post.find_by(id: post.reply_to).title %>
+              "<%= link_to post_path(@reply_to_post.id), class: "has-text-dark" do %>
+                <span class="subtitle th-500 is-6">
+                <%= @reply_to_post.title %>...
+                <%= @reply_to_post.stand %> 
+                </span>
               <% end %>"
             <% else %>
               In disagreement with 
-              "<%= link_to post_path(post.reply_to), class: "has-text-dark th-500" do %>
-                <%= Post.find_by(id: post.reply_to).title %>
+              "<%= link_to post_path(@reply_to_post.id), class: "has-text-dark" do %>
+                <span class="subtitle th-500 is-6">
+                <%= @reply_to_post.title %>...
+                <%= @reply_to_post.stand %> 
+                </span>
               <% end %>"
             <% end %>
-        <% end %>
-        </p>
-        <p class="title is-6 m-b-20 m-t-20">stand: </p>
-        <p class="subtitle is-6"><%= post.stand %></p>
-      </p>
+          </p>
+    <% end %>
+    <% if !post.stand.blank? %>
+      <p class="subtitle is-6 m-b-20"> <span class="title th-700 is-6">stand: </span> <br> <%= post.stand %></p>
+    <% end %>
     </div>
   </div>
 </article>
@@ -219,18 +236,26 @@ reactions
     <nav class="navbar">
     <div class="navbar-start">
         <div class="navbar-item">
-          <p class="has-text-dark"><%= Post.where(reply_to: post.id, agree: "1").count %> agree</p>
-        </div>   
+          <p class="has-text-dark"><%= Post.where(reply_to: post.id, agree: "1").count %> agree | <%= Post.where(reply_to: post.id, agree: "0").count %> disagree</p>
+        </div>    
+    </div>
+    <div class="navbar-end">
         <div class="navbar-item">
-          <p class="has-text-dark"><%= Post.where(reply_to: post.id, agree: "0").count %> disagree</p>
-        </div>   
+            <%= link_to 'see thread', post_path(post.id), class:"has-text-dark" %>
+        </div>
         <div class="navbar-item">
-            <%= link_to 'go to post', post_path(post.id), class:"button is-light" %>
+            <%= link_to 'unproductive', post_path(post.id), class:"has-text-dark" %>
         </div>
     </div>
-
     </nav>
     <hr>
 <% end %>
     </div>
 </section>
+
+<!--navbar fixed on the bottom-->
+<nav class="navbar is-fixed-bottom">
+<div class="navbar-end">
+<a class="button is-black toggle-modal th-500 is-pulled-right m-r-10 navbar-item f-20" aria-control="react"> <i class="material-icons f-20">add</i> thread</a>
+</div>
+</nav>

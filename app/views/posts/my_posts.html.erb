@@ -22,30 +22,124 @@
             <div class="modal-content">
               <div class="box">
               <a class="delete is-pulled-right toggle-modal" aria-control="edit<%= post.id%>"></a>
-              
+              <p class="title th-700 f-20">edit and publish</p>
+              <% @reply_to_post = Post.find_by(id: post.reply_to )%>
+              <p class="subtitle f-20 th-400">post in reference to: <br>
+                  <%if !post.original? %>
+              <div class="hero is-light">
+              <div class="p-20">
+              <p class="th-700 f-20 m-b-0 p-t-0">reply <span class="th-300 f-15"><%=time_ago_in_words(post.created_at)%></span></p>
+                      <p class="m-t-0 p-t-0 subtitle is-6"><%= post.user.username %></p>
+                      <p class="subtitle is-6">
+                          <% @reply_to_post = Post.find_by(id: post.reply_to)%>
+                          <% if post.agree? %>
+                            In agreement with 
+                            "<%= link_to post_path(@reply_to_post.id), class: "has-text-dark" do %>
+                              <span class="subtitle th-500 is-6">
+                              <%= @reply_to_post.title %>...
+                              <%= @reply_to_post.stand %> 
+                              </span>
+                            <% end %>"
+                          <% else %>
+                            In disagreement with 
+                            "<%= link_to post_path(@reply_to_post.id), class: "has-text-dark" do %>
+                              <span class="subtitle th-500 is-6">
+                              <%= @reply_to_post.title %>...
+                              <%= @reply_to_post.stand %> 
+                              </span>
+                            <% end %>"
+                          <% end %>
+                        </p>
+              </div>
+              </div>
+                  <% if !post.stand.blank? %>
+                    <p class="subtitle is-6 m-b-20"> <span class="title th-700 is-6">stand: </span> <br> <%= post.stand %></p>
+                  <% end %>
+                 <% end %>
+              <br>
+              <%= form_for post do |f|%>
+              <% if !post.original? %>
+              <div class="card">
+                <div class="card-content">
+                <p class="title is-6">do you agree?</p>
+                <p class="subtitle is-6">leave unchecked if you do not agree.</p>
+                <label class="checkbox">
+                    <%= f.check_box :agree %>
+                    i agree
+                </label>
+                </div>
+            </div>
+            <br>
+              <% end %>
+              <% if post.original? %>
+            <div class="card">
+            <div class="card-content">
+            <p class="title is-6">headline</p>
+            <p class="subtitle is-6">this is the header for this topic is 30 words or less.</p>
+            <%= f.text_area :title, id: "title", rows: "3", placeholder: "I believe this because...", :required => true, class: "textarea is-light" %>
+            <div id="remainingChars">Max limit is 30 words.</div>
+            </div>
+            </div>
+            <br>
+            <% end %>
+            <div class="card">
+                <div class="card-content">
+                <p class="title is-6">stand</p>
+                <p class="subtitle is-6">this is the place to list out all of your opinions on this topic and possible ways of resolution.</p>
+                <%= f.text_area :stand, id: "content", rows: "3", placeholder: "I believe this because...", class: "textarea is-light"%>
+                <div id="remainingCharsContent">Max limit is 300 words.</div>
+                </div>
+            </div>
+            <br>
+            <div class="card">
+                <div class="card-content">
+                <p class="title is-6">publish on submittion?</p>
+                <p class="subtitle is-6">check this if you are ready to publish this post otherwise it will save in drafts.</p>
+                <label class="checkbox">
+                    <%= f.check_box :publish %>
+                    publish
+                </label>
+                <br><br>
+                ***note that you cannot edit your post once it is published. you can only change your view.
+                </div>
+            </div>
+            <%= f.submit "submit", class: "button is-black is-pulled-right m-t-20 m-b-100"%>
+            <br><br>
+              <% end %>
               </div>
             </div>
         </div>
         <%end%>
-        <p class="title is-4 m-b-0 p-t-0"><%= post.title %>  <span class="th-300 f-15"><%=time_ago_in_words(post.created_at)%></span></p>
+    <%if post.original? %>
+        <p class="th-700 f-20 m-b-0 p-t-0"><%= post.title %> <span class="th-300 f-15"><%=time_ago_in_words(post.created_at)%></span></p>
+        <p class="m-t-0 p-t-0 subtitle is-6"><%= post.user.username %></p>
+    <% else %>
+<p class="th-700 f-20 m-b-0 p-t-0">reply <span class="th-300 f-15"><%=time_ago_in_words(post.created_at)%></span></p>
         <p class="m-t-0 p-t-0 subtitle is-6"><%= post.user.username %></p>
         <p class="subtitle is-6">
-        <% if !post.reply_to.nil? %>
+            <% @reply_to_post = Post.find_by(id: post.reply_to)%>
             <% if post.agree? %>
               In agreement with 
-              "<%= link_to post_path(post.reply_to), class: "has-text-dark th-500" do %>
-                <%= Post.find_by(id: post.reply_to).title %>
+              "<%= link_to post_path(@reply_to_post.id), class: "has-text-dark" do %>
+                <span class="subtitle th-500 is-6">
+                <%= @reply_to_post.title %>...
+                <%= @reply_to_post.stand %> 
+                </span>
               <% end %>"
             <% else %>
               In disagreement with 
-              "<%= link_to post_path(post.reply_to), class: "has-text-dark th-500" do %>
-                <%= Post.find_by(id: post.reply_to).title %>
+              "<%= link_to post_path(@reply_to_post.id), class: "has-text-dark" do %>
+                <span class="subtitle th-500 is-6">
+                <%= @reply_to_post.title %>...
+                <%= @reply_to_post.stand %> 
+                </span>
               <% end %>"
             <% end %>
-        <% end %>
-        </p>
-        <p class="title is-6 m-b-20 m-t-20">stand: </p>
-        <p class="subtitle is-6"><%= post.stand %></p>
+          </p>
+    <% end %>
+    <% if !post.stand.blank? %>
+      <p class="subtitle is-6 m-b-20"> <span class="title th-700 is-6">stand: </span> <br> <%= post.stand %></p>
+    <% end %>
       </p>
     </div>
   </div>
@@ -53,18 +147,17 @@
   <!--------------------------------------------------------->
   <!--------------agree, disagree, etc------------------------------------------->
   <!--------------------------------------------------------->
+    <%if params[:page] != "drafts"%> 
     <nav class="navbar">
     <div class="navbar-start">
         <div class="navbar-item">
-          <p class="has-text-dark"><%= Post.where(reply_to: post.id, agree: "1").count %> agree</p>
-        </div>   
+          <p class="has-text-dark"><%= Post.where(reply_to: post.id, agree: "1").count %> agree | <%= Post.where(reply_to: post.id, agree: "0").count %> disagree</p>
+        </div>    
         <div class="navbar-item">
-          <p class="has-text-dark"><%= Post.where(reply_to: post.id, agree: "0").count %> disagree</p>
-        </div>   
-        <div class="navbar-item">
-            <%= link_to 'go to post', post_path(post.id), class:"button is-light" %>
+            <%= link_to 'see thread', post_path(post.id), class:"has-text-dark" %>
         </div>
     </div>
+    <% end %>
 
     </nav>
     <hr>

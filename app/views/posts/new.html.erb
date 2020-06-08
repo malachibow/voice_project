@@ -1,13 +1,20 @@
 <section class="section">
     <div class="container">
+    <% 
+        p = Post.where('created_at >= ?', Date.current.advance(days: -6))
+      @week_posts = p.find_by('user_id = ? AND original = ? AND publish = ?', current_user.id, true, true)
+    %>
+        <% if !@week_posts.nil? %>
+            <p class="subtitle is-5 th-500 has-text-danger">*you have already created a new post for this week. This post will automatically save in drafts. If you would like to post more, you can upgrade to premium for $10 a month.*</p>          
+        <% end %>
         <%= form_for Post.new do |f| %>
-        <h1 class="title is-5">new topic</h1>
-        <h3 class="subtitle is-6">this form is designed to provide the framework to produce a productive conversation for the best results in trying to be understood or heard.</h3>
+        <h1 class="title is-4 th-600">new yarn</h1>
+        <h3 class="subtitle is-5 th-400">this is the start of a new discussion. fill out the form below.</h3>
         <div class="card">
             <div class="card-content">
             <p class="title is-6">headline</p>
-            <p class="subtitle is-6">this is the header for this topic is 30 words or less.</p>
-            <%= f.text_area :title, id: "title", rows: "3", placeholder: "I believe this because...", :required => true, class: "textarea is-light" %>
+            <p class="subtitle is-6">this is the header for this discussion is 30 words or less. It should serve as a brief description of what the discussion is about and your initial thoughts on it. </p>
+            <%= f.text_area :title, id: "title", rows: "3", placeholder: "I think that...", :required => true, class: "textarea is-light" %>
             <div id="remainingChars">Max limit is 30 words.</div>
             </div>
         </div>
@@ -15,24 +22,26 @@
         <div class="card">
             <div class="card-content">
             <p class="title is-6">stand</p>
-            <p class="subtitle is-6">this is the place to list out all of your opinions on this topic and possible ways of resolution.</p>
+            <p class="subtitle is-6">this is the place to list out all of your opinions on this topic.</p>
             <%= f.text_area :stand, id: "content", rows: "3", placeholder: "I believe this because...", class: "textarea is-light"%>
             <div id="remainingCharsContent">Max limit is 300 words.</div>
             </div>
         </div>
         <br>
+        <% if @week_posts.nil? %>
         <div class="card">
             <div class="card-content">
             <p class="title is-6">publish on submittion?</p>
             <p class="subtitle is-6">check this if you are ready to publish this post otherwise it will save in drafts.</p>
             <label class="checkbox">
-                <%= f.check_box :agree %>
-                yes
+                <%= f.check_box :publish %>
+                publish
             </label>
             <br><br>
              ***note that you cannot edit your post once it is published. you can only change your view.
             </div>
         </div>
+        <% end %>
         <%= f.submit "submit", class: "button is-black is-pulled-right m-t-20 m-b-100"%>
         <% end %>
     </div>

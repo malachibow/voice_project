@@ -1,4 +1,12 @@
-
+        <% 
+            p = Post.where('created_at >= ?', Date.current.advance(days: -6))
+          @week_posts = p.find_by('user_id = ? AND original = ? AND publish = ?', current_user.id, true, true)
+        %>
+        <% if @week_posts.nil? %>
+        <div class="m-l-30 m-r-30">
+        <%= link_to 'you can create a new yarn. click here to add one.', new_post_path%>
+        </div>
+        <% end %>
 <div class="tabs">
   <ul>
     <li class="<%if params[:filter] == "following"%>th-700<%end%>"><%= link_to 'following', posts_path(filter: "following") %></li>
@@ -9,49 +17,61 @@
 
 
 <section class="section">
-<div class="containe">
+<div class="container">
 <% @posts.each do |post|%>
-  <!--------------------------------------------------------->
-  <!--------------content------------------------------------------->
-  <!--------------------------------------------------------->
-        <p class="title is-4 m-b-0 p-t-0"><%= post.title %>  <span class="th-300 f-15"><%=time_ago_in_words(post.created_at)%></span></p>
+
+    <%if post.original? %>
+        <p class="th-700 f-20 m-b-0 p-t-0"><%= post.title %> <span class="th-300 f-15"><%=time_ago_in_words(post.created_at)%></span></p>
+        <p class="m-t-0 p-t-0 subtitle is-6"><%= post.user.username %></p>
+    <% else %>
+<p class="th-700 f-20 m-b-0 p-t-0">reply <span class="th-300 f-15"><%=time_ago_in_words(post.created_at)%></span></p>
         <p class="m-t-0 p-t-0 subtitle is-6"><%= post.user.username %></p>
         <p class="subtitle is-6">
-        <% if !post.reply_to.nil? %>
+            <% @reply_to_post = Post.find_by(id: post.reply_to)%>
             <% if post.agree? %>
-              In agreement with
-              "<%= link_to post_path(post.reply_to), class: "has-text-dark th-500" do %>
-                <%= Post.find_by(id: post.reply_to).title %>
+              In agreement with 
+              "<%= link_to post_path(@reply_to_post.id), class: "has-text-dark" do %>
+                <span class="subtitle th-500 is-6">
+                <%= @reply_to_post.title %>...
+                <%= @reply_to_post.stand %> 
+                </span>
               <% end %>"
             <% else %>
               In disagreement with 
-              "<%= link_to post_path(post.reply_to), class: "has-text-dark th-500" do %>
-                <%= Post.find_by(id: post.reply_to).title %>
+              "<%= link_to post_path(@reply_to_post.id), class: "has-text-dark" do %>
+                <span class="subtitle th-500 is-6">
+                <%= @reply_to_post.title %>...
+                <%= @reply_to_post.stand %> 
+                </span>
               <% end %>"
             <% end %>
-        <% end %>
-        </p>
-        <p class="title is-6 m-b-20 m-t-20">stand: </p>
-        <p class="subtitle is-6"><%= post.stand %></p>
+          </p>
+    <% end %>
+    <% if !post.stand.blank? %>
+      <p class="subtitle is-6 m-b-20"> <span class="title th-700 is-6">stand: </span> <br> <%= post.stand %></p>
+    <% end %>
   <!--------------------------------------------------------->
   <!--------------agree, disagree, etc------------------------------------------->
   <!--------------------------------------------------------->
     <nav class="navbar">
     <div class="navbar-start">
         <div class="navbar-item">
-          <p class="has-text-dark"><%= Post.where(reply_to: post.id, agree: "1", publish: "1").count %> agree</p>
+          <p class="has-text-dark"><%= Post.where(reply_to: post.id, agree: "1", publish: "1").count %> agree | <%= Post.where(reply_to: post.id, agree: "0", publish: "1").count %> disagree</p>
         </div>   
-        <div class="navbar-item">
-          <p class="has-text-dark"><%= Post.where(reply_to: post.id, agree: "0", publish: "1").count %> disagree</p>
-        </div>   
-        <div class="navbar-item">
-        <div class="buttons">
-            <%= link_to 'go to post', post_path(post.id), class: "button is-light" %>
+    </div>
+    <div class="navbar-end">
+            <div class="navbar-item">
+            <%= link_to 'see thread', post_path(post.id), class: "has-text-dark" %>
         </div>
+        <div class="navbar-item">
+            <%= link_to 'unproductive?', post_path(post.id), class: "has-text-dark" %>
         </div>
     </div>
     </nav>
+    
+  <% if params[:filter] != "discover"%>
     <hr>
+  <% end %>
 <% end %>
 <% if @posts.blank? %>
   There are no posts to show.

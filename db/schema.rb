@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_06_05_201919) do
+ActiveRecord::Schema.define(version: 2020_06_08_171338) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -46,20 +46,12 @@ ActiveRecord::Schema.define(version: 2020_06_05_201919) do
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
 
-  create_table "conversations", force: :cascade do |t|
-    t.text "opinion"
-    t.text "experience"
-    t.bigint "topic_id", null: false
+  create_table "bugs", force: :cascade do |t|
+    t.text "content"
+    t.bigint "user_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.integer "status"
-    t.index ["topic_id"], name: "index_conversations_on_topic_id"
-  end
-
-  create_table "feelings", force: :cascade do |t|
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.string "name"
+    t.index ["user_id"], name: "index_bugs_on_user_id"
   end
 
   create_table "followers", force: :cascade do |t|
@@ -69,12 +61,6 @@ ActiveRecord::Schema.define(version: 2020_06_05_201919) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["follower_id"], name: "index_followers_on_follower_id"
     t.index ["user_id"], name: "index_followers_on_user_id"
-  end
-
-  create_table "outcomes", force: :cascade do |t|
-    t.string "type"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "posts", force: :cascade do |t|
@@ -92,19 +78,6 @@ ActiveRecord::Schema.define(version: 2020_06_05_201919) do
     t.index ["user_id"], name: "index_posts_on_user_id"
   end
 
-  create_table "replies", force: :cascade do |t|
-    t.text "opinion"
-    t.text "experience"
-    t.integer "status"
-    t.bigint "topic_id", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.string "feelings"
-    t.bigint "user_id", null: false
-    t.index ["topic_id"], name: "index_replies_on_topic_id"
-    t.index ["user_id"], name: "index_replies_on_user_id"
-  end
-
   create_table "saved_posts", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "post_id", null: false
@@ -112,36 +85,6 @@ ActiveRecord::Schema.define(version: 2020_06_05_201919) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["post_id"], name: "index_saved_posts_on_post_id"
     t.index ["user_id"], name: "index_saved_posts_on_user_id"
-  end
-
-  create_table "saves", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.bigint "post_id", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["post_id"], name: "index_saves_on_post_id"
-    t.index ["user_id"], name: "index_saves_on_user_id"
-  end
-
-  create_table "topicfeelings", force: :cascade do |t|
-    t.bigint "feeling_id", null: false
-    t.bigint "topic_id", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["feeling_id"], name: "index_topicfeelings_on_feeling_id"
-    t.index ["topic_id"], name: "index_topicfeelings_on_topic_id"
-  end
-
-  create_table "topics", force: :cascade do |t|
-    t.text "facts"
-    t.text "experience"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.text "title"
-    t.bigint "user_id", null: false
-    t.text "opinions"
-    t.string "feelings"
-    t.index ["user_id"], name: "index_topics_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -158,15 +101,10 @@ ActiveRecord::Schema.define(version: 2020_06_05_201919) do
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "bugs", "users"
   add_foreign_key "followers", "users"
   add_foreign_key "followers", "users", column: "follower_id"
   add_foreign_key "posts", "users"
-  add_foreign_key "replies", "users"
   add_foreign_key "saved_posts", "posts"
   add_foreign_key "saved_posts", "users"
-  add_foreign_key "saves", "posts"
-  add_foreign_key "saves", "users"
-  add_foreign_key "topicfeelings", "feelings"
-  add_foreign_key "topicfeelings", "topics"
-  add_foreign_key "topics", "users"
 end

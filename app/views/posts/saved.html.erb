@@ -73,3 +73,7 @@
     </div>
     </nav>
     <% end %>
+
+    <% if @posts.nil? %>
+      There are no posts to show.
+    <% end %>
